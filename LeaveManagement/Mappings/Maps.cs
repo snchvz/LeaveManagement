@@ -14,8 +14,7 @@ namespace LeaveManagement.Mappings
         {
             //typers can be mapped to either direction
             //i.e. LeaveType -> DetailsLeaveTypeVM or DetailsLeaveTypeVM -> LeaveType
-            CreateMap<LeaveType, DetailsLeaveTypeVM>().ReverseMap();
-            CreateMap<LeaveType, CreateLeaveTypeVM>().ReverseMap();
+            CreateMap<LeaveType, LeaveTypeVM>().ReverseMap();
             CreateMap<LeaveAllocation, LeaveAllocationVM>().ReverseMap();
             CreateMap<LeaveHistory, LeaveHistoryVM>().ReverseMap();
             CreateMap<Employee, EmployeeVM>().ReverseMap();

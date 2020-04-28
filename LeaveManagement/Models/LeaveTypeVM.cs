@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 namespace LeaveManagement.Models
 {
     //VM view model
-    public class DetailsLeaveTypeVM
+    public class LeaveTypeVM
     {
         public int id { get; set; } 
-        public string Name { get; set; } 
-        public DateTime DateCreated { get; set; }
-    }
-    public class CreateLeaveTypeVM
-    {
+
+        [Display(Name="Leave Type")]
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } 
+
+        //NOTE** make DateCreated nullable, otherwise the Required attribute from Name will make Date Created Required as well
+        [Display(Name="Date Created")]
+        public DateTime? DateCreated { get; set; }
     }
+
 }

@@ -16,6 +16,14 @@ namespace LeaveManagement.Repository
             _db = db;
         }
 
+        public bool CheckAllocation(int leaveTypeId, string employeeId)
+        {
+            var period = DateTime.Now.Year;
+            return FindAll()
+                .Where(t => t.EmployeeId == employeeId && t.LeaveTypeId == leaveTypeId && t.Period == period)
+                .Any();
+        }
+
         public bool Create(LeaveAllocation entity)
         {
             _db.LeaveAllocations.Add(entity);

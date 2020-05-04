@@ -18,7 +18,10 @@ namespace LeaveManagement.Data
         public string EmployeeId { get; set; } //use Employeeid to get Employee object
         [ForeignKey("LeaveTypeId")]
         public LeaveType LeaveType { get; set; }
-        public int LeaveTypeId { get; set; }    
+        public int LeaveTypeId { get; set; }   
+
+        //represents year
+        public int Period { get; set; }
 
     }
 }

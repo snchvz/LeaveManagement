@@ -12,12 +12,17 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="id">
-           @*make hidden input for Date Created so it can pass its value, otherwise the date will get reset to a default value*@
+            @*make hidden input for Date Created so it can pass its value, otherwise the date will get reset to a default value*@
             <input type="hidden" asp-for="DateCreated">
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DefaultDays" class="control-label"></label>
+                <input asp-for="DefaultDays" class="form-control" />
+                <span asp-validation-for="DefaultDays" class="text-danger"></span>
             </div>
             @*<div class="form-group">
             <label asp-for="DateCreated" class="control-label"></label>

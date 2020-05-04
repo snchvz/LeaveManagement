@@ -11,9 +11,12 @@ namespace LeaveManagement.Models
     {
         public int id { get; set; }
 
-        [Required]
+        [Display(Name ="Number of Days")]
         public int NumberOfDays { get; set; } //Leave Days Allocated
         public DateTime DateCreated { get; set; }
+
+        //represents calander year
+        public int Period { get; set; }
 
         //NOTE** View Models should reference other view models only, dont reference a Data Model
         //i.e. reference EmployeeVM, not Employee
@@ -25,5 +28,11 @@ namespace LeaveManagement.Models
 
         public IEnumerable<SelectListItem> Employees { get; set; }
         public IEnumerable<SelectListItem> LeaveTypes { get; set; }
+    }
+
+    public class CreateLeaveAllocationVM
+    {
+        public int NumberUpdated { get; set; }
+        public List<LeaveTypeVM> LeaveTypes { get; set; }
     }
 }

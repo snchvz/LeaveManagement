@@ -83,7 +83,7 @@ namespace LeaveManagement.Controllers
         public ActionResult ListEmployees()
         {
             //get all users that are employees (in employee role)
-            var employees = _userManager.GetUsersInRoleAsync("Employee").Result;
+            var employees = _userManager.GetUsersInRoleAsync("Employee").Result; //use .Result for async funcs
 
 
             var model = _mapper.Map<List<EmployeeVM>>(employees);
@@ -91,9 +91,20 @@ namespace LeaveManagement.Controllers
         }
 
         // GET: LeaveAllocation/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(string id) //pass an employee id (string)
         {
-            return View();
+            var employee = _mapper.Map<EmployeeVM>(_userManager.FindByIdAsync(id).Result);
+            var allocations = _mapper
+                .Map<List<LeaveAllocationVM>>(_LeaveAllocationrepo.GetLeaveAllocationsByEmployee(id));
+
+            var model = new ViewAllocationsVM
+            {
+                Employee = employee,
+                LeaveAllocations = allocations,
+                Employeeid = employee.Id
+            };
+
+            return View(model);
         }
 
         // GET: LeaveAllocation/Create
@@ -122,23 +133,40 @@ namespace LeaveManagement.Controllers
         // GET: LeaveAllocation/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var leaveAllocation = _LeaveAllocationrepo.FindById(id);
+            var model = _mapper.Map<EditLeaveAllocationVM>(leaveAllocation);
+            return View(model);
         }
 
         // POST: LeaveAllocation/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(EditLeaveAllocationVM model)
         {
             try
             {
-                // TODO: Add update logic here
+                if(!ModelState.IsValid)
+                {
+                    return View(model);
+                }
 
-                return RedirectToAction(nameof(Index));
+                var record = _LeaveAllocationrepo.FindById(model.id);
+                record.NumberOfDays = model.NumberOfDays;
+               
+                var success = _LeaveAllocationrepo.Update(record);
+                if(!success)
+                {
+                    ModelState.AddModelError("", "error while saving");
+                    return View(model);
+                }
+
+                //redirect to Details. since Deatails takes a string id parameter,
+                //we pass in a new object of model.EmployeeId as the parameter to be used in Details(string id)
+                return RedirectToAction(nameof(Details), new { id = model.EmployeeId});
             }
             catch
             {
-                return View();
+                return View(model);
             }
         }
 

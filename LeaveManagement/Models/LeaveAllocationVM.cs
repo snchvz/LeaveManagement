@@ -25,14 +25,28 @@ namespace LeaveManagement.Models
 
         public LeaveTypeVM LeaveType { get; set; }
         public int LeaveTypeId { get; set; }
-
-        public IEnumerable<SelectListItem> Employees { get; set; }
-        public IEnumerable<SelectListItem> LeaveTypes { get; set; }
     }
 
     public class CreateLeaveAllocationVM
     {
         public int NumberUpdated { get; set; }
         public List<LeaveTypeVM> LeaveTypes { get; set; }
+    }
+
+    public class ViewAllocationsVM
+    {
+        public EmployeeVM Employee { get; set; }
+        public string Employeeid { get; set; }
+        public List<LeaveAllocationVM> LeaveAllocations { get; set; }
+    }
+
+    public class EditLeaveAllocationVM
+    {
+        public int id { get; set; }
+        public EmployeeVM Employee { get; set; }
+
+        public string EmployeeId { get; set; } //use Employeeid to get Employee object
+        public int NumberOfDays { get; set; }
+        public LeaveTypeVM LeaveType { get; set; }
     }
 }

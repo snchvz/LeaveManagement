@@ -16,8 +16,10 @@ namespace LeaveManagement.Mappings
             //i.e. LeaveType -> DetailsLeaveTypeVM or DetailsLeaveTypeVM -> LeaveType
             CreateMap<LeaveType, LeaveTypeVM>().ReverseMap();
             CreateMap<LeaveAllocation, LeaveAllocationVM>().ReverseMap();
+            CreateMap<LeaveAllocation, EditLeaveAllocationVM>().ReverseMap();
             CreateMap<LeaveHistory, LeaveHistoryVM>().ReverseMap();
             CreateMap<Employee, EmployeeVM>().ReverseMap();
+
         }
     }
 }

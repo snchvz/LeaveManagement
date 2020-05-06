@@ -38,7 +38,7 @@ namespace LeaveManagement
             //add repository and contract class relationships references to the .net core app
             services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
             services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
-            services.AddScoped<ILeaveHistoryRepository, LeaveHistoryRepository>();
+            services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 
             //adds automapper config file in type of Maps (which we created)
             //used to map relations from Data class types to view model types

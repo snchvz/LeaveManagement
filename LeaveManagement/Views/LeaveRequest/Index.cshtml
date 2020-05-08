@@ -9,6 +9,60 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+
+            <div class="card-body text-center">
+                <h3 class="card-title">@Model.TotalRequests</h3>
+                <h6 class="card-text">@Html.DisplayNameFor(model => model.TotalRequests)</h6>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+
+            <div class="card-body text-center">
+                <h3 class="card-title text-warning">@Model.PendingRequests</h3>
+                <h6 class="card-text">@Html.DisplayNameFor(model => model.PendingRequests)</h6>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+
+            <div class="card-body text-center">
+                <h3 class="card-title text-success">@Model.ApprovedRequests</h3>
+                <h6 class="card-text">@Html.DisplayNameFor(model => model.ApprovedRequests)</h6>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card" style="width: 18rem;">
+
+            <div class="card-body text-center">
+                <h3 class="card-title text-danger">@Model.RejectedRequests</h3>
+                <h6 class="card-text">@Html.DisplayNameFor(model => model.RejectedRequests)</h6>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br />
+<br />
+<hr />
+<h1>Leave Requests Log</h1>
+
 <table id="tblData" class="table">
     <thead>
         <tr>
@@ -71,9 +125,11 @@
             </td>
 
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>  |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>  |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+                <a class="btn btn-primary" asp-action="Administer" asp-route-id="@item.Id">
+                    <i class="fa fa-file"></i>Administer
+                </a>
+
             </td>
         </tr>
 }

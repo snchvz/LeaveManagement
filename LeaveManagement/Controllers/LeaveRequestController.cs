@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LeaveManagement.Controllers
 {
@@ -17,15 +18,21 @@ namespace LeaveManagement.Controllers
     public class LeaveRequestController : Controller
     {
         private readonly ILeaveRequestRepository _leaveRequestRepo;
+        private readonly ILeaveTypeRepository _leaveTypeRepo;
+        private readonly ILeaveAllocationRepository _leaveAllocationRepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Employee> _userManager;
 
         public LeaveRequestController(
             ILeaveRequestRepository repo,
+            ILeaveTypeRepository leaveTypeRepo,
+            ILeaveAllocationRepository leaveAllocationRepo,
             IMapper mapper,
             UserManager<Employee> userManager)
         {
             _leaveRequestRepo = repo;
+            _leaveTypeRepo = leaveTypeRepo;
+            _leaveAllocationRepo = leaveAllocationRepo;
             _mapper = mapper;
             _userManager = userManager;
         }
@@ -75,36 +82,153 @@ namespace LeaveManagement.Controllers
         // GET: LeaveRequest/Details/5
         public ActionResult Details(int id)
         {
+
             return View();
         }
 
         // GET: LeaveRequest/Create
         public ActionResult Create()
         {
-            return View();
+            var leaveTypes = _leaveTypeRepo.FindAll();
+            //convert the leaveTypes list into an IEnumerable SelectListItem to match our CreateLeaveRequestVM
+            var leaveTypeItems = leaveTypes.Select(t => new SelectListItem {
+                Text = t.Name,  //what we see rendered
+                Value = t.id.ToString()    //the actual value (value is string)
+            });
+
+            var model = new CreateLeaveRequestVM
+            {
+                LeaveTypes = leaveTypeItems
+            };
+
+            return View(model);
         }
 
         // POST: LeaveRequest/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(CreateLeaveRequestVM model)
         {
             try
             {
-                // TODO: Add insert logic here
+                var startDate = Convert.ToDateTime(model.StartDate);
+                var endDate = Convert.ToDateTime(model.EndDate);
 
-                return RedirectToAction(nameof(Index));
+
+                var leaveTypes = _leaveTypeRepo.FindAll();
+                //convert the leaveTypes list into an IEnumerable SelectListItem to match our CreateLeaveRequestVM
+                var leaveTypeItems = leaveTypes.Select(t => new SelectListItem
+                {
+                    Text = t.Name,  //what we see rendered
+                    Value = t.id.ToString()    //the actual value (value is string)
+                });
+
+                model.LeaveTypes = leaveTypeItems;
+
+                if (!ModelState.IsValid)
+                {
+                    ModelState.AddModelError("", "Start Date must come before end date");
+                    return View(model);
+                }
+
+                if(DateTime.Compare(startDate, endDate) > 1)
+                {
+                    return View(model);
+                }
+
+                //get the user (employee) that is currently logged in
+                var employee = _userManager.GetUserAsync(User).Result;
+                var allocation = _leaveAllocationRepo.GetAllocationsByEmployeeAndType(employee.Id, model.LeaveTypeId);
+                int daysRequested = (int)(endDate - startDate).TotalDays;
+
+                if (daysRequested > allocation.NumberOfDays)
+                {
+                    ModelState.AddModelError("", "You do not have sufficient days for this request\nNumber of days left: " + allocation.NumberOfDays) ;
+                    return View(model);
+                }
+
+                var leaveRequestModel = new LeaveRequestVM
+                {
+                    RequestingEmployeeId = employee.Id,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    Approved = null,
+                    DateRequested = DateTime.Now,
+                    DateActioned = DateTime.Now,
+                    LeaveTypeId = model.LeaveTypeId
+                };
+
+                var leaveRequest = _mapper.Map<LeaveRequest>(leaveRequestModel);
+                var success = _leaveRequestRepo.Create(leaveRequest);
+                if(!success)
+                {
+                    ModelState.AddModelError("", "Something went wrong with submitting your record");
+                    return View(model);
+                }
+
+                //redirect to index of Home controller
+                return RedirectToAction(nameof(Index),"Home");
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                ModelState.AddModelError("", "Something went wrong");
+                return View(model);
             }
         }
 
-        // GET: LeaveRequest/Edit/5
-        public ActionResult Edit(int id)
+        // GET: LeaveRequest/Administer/5
+        public ActionResult Administer(int id)
         {
-            return View();
+            var leaveRequest = _leaveRequestRepo.FindById(id);
+            var model = _mapper.Map<LeaveRequestVM>(leaveRequest);
+            return View(model);
+        }
+
+        public ActionResult ApproveRequest(int id)
+        {
+            try
+            {
+                var admin = _userManager.GetUserAsync(User).Result;
+                var leaveRequest = _leaveRequestRepo.FindById(id);
+                var allocation = _leaveAllocationRepo.GetAllocationsByEmployeeAndType(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
+                int daysRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
+
+                allocation.NumberOfDays -= daysRequested;
+                leaveRequest.Approved = true;
+                leaveRequest.ApprovedById = admin.Id;
+                leaveRequest.DateActioned = DateTime.Now;
+
+                _leaveRequestRepo.Update(leaveRequest);
+                _leaveAllocationRepo.Update(allocation);
+
+                return RedirectToAction(nameof(Index));                
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return RedirectToAction(nameof(Index));
+            }      
+        }
+
+        public ActionResult RejectRequest(int id)
+        {
+            try
+            {
+                var admin = _userManager.GetUserAsync(User).Result;
+                var leaveRequest = _leaveRequestRepo.FindById(id);
+                leaveRequest.Approved = false;
+                leaveRequest.ApprovedById = admin.Id;
+                leaveRequest.DateActioned = DateTime.Now;
+
+                _leaveRequestRepo.Update(leaveRequest);
+
+                return RedirectToAction(nameof(Index), "Home");
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", "Something went wrong");
+                return RedirectToAction(nameof(Index), "Home");
+            }
         }
 
         // POST: LeaveRequest/Edit/5

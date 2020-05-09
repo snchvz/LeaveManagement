@@ -138,7 +138,7 @@ namespace LeaveManagement.Controllers
 
                 //get the user (employee) that is currently logged in
                 var employee = _userManager.GetUserAsync(User).Result;
-                var allocation = _leaveAllocationRepo.GetAllocationsByEmployeeAndType(employee.Id, model.LeaveTypeId);
+                var allocation = _leaveAllocationRepo.GetLeaveAllocationByEmployeeAndType(employee.Id, model.LeaveTypeId);
                 int daysRequested = (int)(endDate - startDate).TotalDays;
 
                 if (daysRequested > allocation.NumberOfDays)
@@ -155,7 +155,8 @@ namespace LeaveManagement.Controllers
                     Approved = null,
                     DateRequested = DateTime.Now,
                     DateActioned = DateTime.Now,
-                    LeaveTypeId = model.LeaveTypeId
+                    LeaveTypeId = model.LeaveTypeId,
+                    RequestComments = model.RequestComments
                 };
 
                 var leaveRequest = _mapper.Map<LeaveRequest>(leaveRequestModel);
@@ -190,7 +191,7 @@ namespace LeaveManagement.Controllers
             {
                 var admin = _userManager.GetUserAsync(User).Result;
                 var leaveRequest = _leaveRequestRepo.FindById(id);
-                var allocation = _leaveAllocationRepo.GetAllocationsByEmployeeAndType(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
+                var allocation = _leaveAllocationRepo.GetLeaveAllocationByEmployeeAndType(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
                 int daysRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
 
                 allocation.NumberOfDays -= daysRequested;
@@ -222,13 +223,40 @@ namespace LeaveManagement.Controllers
 
                 _leaveRequestRepo.Update(leaveRequest);
 
-                return RedirectToAction(nameof(Index), "Home");
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception e)
             {
                 ModelState.AddModelError("", "Something went wrong");
-                return RedirectToAction(nameof(Index), "Home");
+                return RedirectToAction(nameof(Index));
             }
+        }
+
+        public ActionResult MyLeave()
+        {
+            var employee = _userManager.GetUserAsync(User).Result;
+            
+            var leaveAllocations = 
+                _mapper.Map<List<LeaveAllocationVM>>(_leaveAllocationRepo.GetLeaveAllocationsByEmployee(employee.Id));
+            var leaveRequests =
+                _mapper.Map<List<LeaveRequestVM>>(_leaveRequestRepo.GetLeaveRequestsByEmployee(employee.Id));
+
+
+            EmployeeLeaveRequestVM model = new EmployeeLeaveRequestVM
+            {
+                LeaveAllocations = leaveAllocations,
+                LeaveRequests = leaveRequests
+            }; 
+
+            return View(model);
+        }
+
+        public ActionResult CancelRequest(int id)
+        {
+            var leaveRequest = _leaveRequestRepo.FindById(id);
+            leaveRequest.Cancelled = true;
+            _leaveRequestRepo.Update(leaveRequest);
+            return RedirectToAction("MyLeave");
         }
 
         // POST: LeaveRequest/Edit/5

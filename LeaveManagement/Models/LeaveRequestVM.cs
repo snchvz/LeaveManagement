@@ -35,12 +35,18 @@ namespace LeaveManagement.Models
         [Display(Name ="Date Actioned")]
         public DateTime DateActioned { get; set; }
 
+        [Display(Name ="Request Comment")]
+        [MaxLength(300)]
+        public string RequestComments { get; set; }
+
         [Display(Name ="Approval Status")]
         //approved = true, rejected = false, pending = null
         public bool? Approved { get; set; }
 
         public EmployeeVM ApprovedBy { get; set; }
         public string ApprovedById { get; set; }
+
+        public bool Cancelled { get; set; }
     }
 
     public class AdminLeaveRequestViewVM
@@ -74,5 +80,13 @@ namespace LeaveManagement.Models
 
         [Display(Name ="Leave Type")]
         public int LeaveTypeId { get; set; }
+
+        public string RequestComments { get; set; }
+    }
+
+    public class EmployeeLeaveRequestVM
+    {
+        public List<LeaveAllocationVM> LeaveAllocations { get; set; }
+        public List<LeaveRequestVM> LeaveRequests { get; set; }
     }
 }

@@ -39,11 +39,19 @@ namespace LeaveManagement.Repository
 
         public LeaveRequest FindById(int id)
         {
-            return _db.LeaveRequests
-                 .Include(t => t.RequestingEmployee)
+            var leaveRequest = _db.LeaveRequests
+                .Include(t => t.RequestingEmployee)
                 .Include(t => t.ApprovedBy)
                 .Include(t => t.LeaveType)
                 .FirstOrDefault(t => t.Id == id);
+            return leaveRequest;
+        }
+
+        public ICollection<LeaveRequest> GetLeaveRequestsByEmployee(string employeeid)
+        {
+            return FindAll()               
+                .Where(t => t.RequestingEmployeeId == employeeid)
+                .ToList();
         }
 
         public bool isExists(int id)

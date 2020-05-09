@@ -56,7 +56,7 @@ namespace LeaveManagement.Repository
                 .FirstOrDefault(t => t.id == id);
         }
 
-        public LeaveAllocation GetAllocationsByEmployeeAndType(string id, int leaveTypeId)
+        public LeaveAllocation GetLeaveAllocationByEmployeeAndType(string id, int leaveTypeId)
         {
             var period = DateTime.Now.Year;
             return FindAll()

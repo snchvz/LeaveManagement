@@ -26,24 +26,26 @@ namespace LeaveManagement.Controllers
         }
 
         // GET: LeaveTypes
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var leaveTypes = _repo.FindAll().ToList();  //find all returns collection, so we have to convert to list to use it in Map()
+            var leaveTypes = await _repo.FindAll();  //find all returns collection, so we have to convert to list to use it in Map()
             //model represents mapped version of the data
             //mapping from list of leave types to list of leave type VM
-            var model = _mapper.Map<List<LeaveType>, List<LeaveTypeVM>>(leaveTypes);
+            var model = _mapper.Map<List<LeaveType>, List<LeaveTypeVM>>(leaveTypes.ToList());
             return View(model);
         }
 
         // GET: LeaveTypes/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            if(!_repo.isExists(id))
+            bool exists = await _repo.isExists(id);
+
+            if(!exists)
             {
                 return NotFound();
             }
 
-            var leaveType = _repo.FindById(id);
+            var leaveType = await _repo.FindById(id);
             var model = _mapper.Map<LeaveTypeVM>(leaveType);
 
             return View(model);
@@ -58,7 +60,7 @@ namespace LeaveManagement.Controllers
         // POST: LeaveTypes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(LeaveTypeVM model)
+        public async Task<ActionResult> Create(LeaveTypeVM model)
         {
             try
             {
@@ -74,7 +76,7 @@ namespace LeaveManagement.Controllers
                 leaveType.DateCreated = DateTime.Now;
 
                 //was the model created?
-                var isSuccess = _repo.Create(leaveType); //when managing the database, we use the actual Types (Not VM)
+                var isSuccess = await _repo.Create(leaveType); //when managing the database, we use the actual Types (Not VM)
                 if(!isSuccess)
                 {
                     ModelState.AddModelError("", "Something Went wrong in creating");
@@ -90,15 +92,16 @@ namespace LeaveManagement.Controllers
         }
 
         // GET: LeaveTypes/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            if(!_repo.isExists(id))
+            var exists = await _repo.isExists(id);
+            if (!exists)
             {
                 return NotFound();
             }
 
             
-            var leaveType = _repo.FindById(id);
+            var leaveType = await _repo.FindById(id);
             //map LeaveType to LeaveTypeVM
             var model = _mapper.Map<LeaveTypeVM>(leaveType);
             //when passing model to views, we use VM types
@@ -108,7 +111,7 @@ namespace LeaveManagement.Controllers
         // POST: LeaveTypes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(LeaveTypeVM model)
+        public async Task<ActionResult> Edit(LeaveTypeVM model)
         {
             try
             {
@@ -119,7 +122,7 @@ namespace LeaveManagement.Controllers
                 }
 
                 var leaveType = _mapper.Map<LeaveType>(model);
-                var isSuccess = _repo.Update(leaveType);
+                var isSuccess = await _repo.Update(leaveType);
 
                 if(!isSuccess)
                 {
@@ -136,16 +139,16 @@ namespace LeaveManagement.Controllers
         }
 
         // GET: LeaveTypes/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var leaveType = _repo.FindById(id);
+            var leaveType = await _repo.FindById(id);
 
             if (leaveType == null)
             {
                 return NotFound();
             }
 
-            var success = _repo.Delete(leaveType);
+            var success = await _repo.Delete(leaveType);
             if (!success)
             {
                 return BadRequest();
@@ -157,19 +160,19 @@ namespace LeaveManagement.Controllers
         // POST: LeaveTypes/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, LeaveTypeVM model)   
+        public async Task<ActionResult> Delete(int id, LeaveTypeVM model)   
         {
             try
             {
                 // TODO: Add delete logic here
-                var leaveType = _repo.FindById(id);
+                var leaveType = await _repo.FindById(id);
 
                 if(leaveType == null)
                 {
                     return NotFound();
                 }
 
-                var success = _repo.Delete(leaveType);
+                var success = await _repo.Delete(leaveType);
                 if(!success)
                 {
                     return View(model);

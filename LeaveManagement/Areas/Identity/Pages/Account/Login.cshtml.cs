@@ -55,6 +55,7 @@ namespace LeaveManagement.Areas.Identity.Pages.Account
             public bool RememberMe { get; set; }
         }
 
+        //this would be equivalent to a void function
         public async Task OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
@@ -72,6 +73,7 @@ namespace LeaveManagement.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        //this is equivalent to a value returning function
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");

@@ -16,59 +16,60 @@ namespace LeaveManagement.Repository
         {
             _db = db;
         }
-        public bool Create(LeaveRequest entity)
+        public async Task<bool> Create(LeaveRequest entity)
         {
-            _db.LeaveRequests.Add(entity);
-            return Save();
+            await _db.LeaveRequests.AddAsync(entity);
+            return await Save();
         }
 
-        public bool Delete(LeaveRequest entity)
+        public async Task<bool> Delete(LeaveRequest entity)
         {
             _db.LeaveRequests.Remove(entity);
-            return Save();
+            return await Save();
         }
 
-        public ICollection<LeaveRequest> FindAll()
+        public async Task<ICollection<LeaveRequest>> FindAll()
         {
-            return _db.LeaveRequests
+            return await _db.LeaveRequests
                 .Include(t => t.RequestingEmployee)
                 .Include(t => t.ApprovedBy)
                 .Include(t => t.LeaveType)
-                .ToList();
+                .ToListAsync();
         }
 
-        public LeaveRequest FindById(int id)
+        public async Task<LeaveRequest> FindById(int id)
         {
-            var leaveRequest = _db.LeaveRequests
+            var leaveRequest = await _db.LeaveRequests
                 .Include(t => t.RequestingEmployee)
                 .Include(t => t.ApprovedBy)
                 .Include(t => t.LeaveType)
-                .FirstOrDefault(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id);
             return leaveRequest;
         }
 
-        public ICollection<LeaveRequest> GetLeaveRequestsByEmployee(string employeeid)
+        public async Task<ICollection<LeaveRequest>> GetLeaveRequestsByEmployee(string employeeid)
         {
-            return FindAll()               
+            var leaveReuests = await FindAll();
+            return leaveReuests
                 .Where(t => t.RequestingEmployeeId == employeeid)
-                .ToList();
+                .ToList();  //NOTE** since we are not directly interacting with the DB, we cannot use ToListAsync()
         }
 
-        public bool isExists(int id)
+        public async Task<bool> isExists(int id)
         {
-            var exists = _db.LeaveRequests.Any(t => t.Id == id);
+            var exists = await _db.LeaveRequests.AnyAsync(t => t.Id == id);
             return exists;
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            return _db.SaveChanges() > 0;
+            return await _db.SaveChangesAsync() > 0;
         }
 
-        public bool Update(LeaveRequest entity)
+        public async Task<bool> Update(LeaveRequest entity)
         {
             _db.LeaveRequests.Update(entity);
-            return Save();
+            return await Save();
         }
     }
 }

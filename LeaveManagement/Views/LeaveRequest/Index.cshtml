@@ -4,56 +4,55 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-
 <div class="row">
 
     <div class="col-md-3">
-        <div class="card" style="width: 18rem;">
 
-            <div class="card-body text-center">
-                <h3 class="card-title">@Model.TotalRequests</h3>
-                <h6 class="card-text">@Html.DisplayNameFor(model => model.TotalRequests)</h6>
+        <div class="info-box">
+            @*<span class="info-box-icon bg-info"></span>*@
 
+            <div class="info-box-content bg-">
+                <span class="info-box-text">@Model.TotalRequests</span>
+                <span class="info-box-number">@Html.DisplayNameFor(model => model.TotalRequests)</span>
             </div>
         </div>
+
     </div>
 
     <div class="col-md-3">
-        <div class="card" style="width: 18rem;">
 
-            <div class="card-body text-center">
-                <h3 class="card-title text-warning">@Model.PendingRequests</h3>
-                <h6 class="card-text">@Html.DisplayNameFor(model => model.PendingRequests)</h6>
+        <div class="info-box">
 
+            <div class="info-box-content">
+                <span class="info-box-text">@Model.PendingRequests</span>
+                <span class="info-box-number">@Html.DisplayNameFor(model => model.PendingRequests)</span>
             </div>
         </div>
+
     </div>
 
     <div class="col-md-3">
-        <div class="card" style="width: 18rem;">
 
-            <div class="card-body text-center">
-                <h3 class="card-title text-success">@Model.ApprovedRequests</h3>
-                <h6 class="card-text">@Html.DisplayNameFor(model => model.ApprovedRequests)</h6>
+        <div class="info-box">
 
+            <div class="info-box-content">
+                <span class="info-box-text">@Model.ApprovedRequests</span>
+                <span class="info-box-number">@Html.DisplayNameFor(model => model.ApprovedRequests)</span>
             </div>
         </div>
+
     </div>
 
     <div class="col-md-3">
-        <div class="card" style="width: 18rem;">
 
-            <div class="card-body text-center">
-                <h3 class="card-title text-danger">@Model.RejectedRequests</h3>
-                <h6 class="card-text">@Html.DisplayNameFor(model => model.RejectedRequests)</h6>
+        <div class="info-box">
 
+            <div class="info-box-content">
+                <span class="info-box-text">@Model.RejectedRequests</span>
+                <span class="info-box-number">@Html.DisplayNameFor(model => model.RejectedRequests)</span>
             </div>
         </div>
+
     </div>
 
 </div>

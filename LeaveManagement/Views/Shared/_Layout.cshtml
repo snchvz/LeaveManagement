@@ -3,7 +3,6 @@
 @inject SignInManager<Employee> SignInManager
 @inject UserManager<Employee> UserManager
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,7 +46,7 @@
                                         Manage
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" asp-controller="LeaveTypes" asp-action="Index">Leave Type</a>
+                                        <a class="dropdown-item" asp-controller="LeaveTypes" asp-action="Index">Leave Types</a>
                                         <a class="dropdown-item" asp-controller="LeaveAllocation" asp-action="Index">Leave Allocations</a>
                                         <a class="dropdown-item" asp-controller="LeaveRequest" asp-action="Index">Leave Requests</a>
                                         <a class="dropdown-item" asp-controller="LeaveAllocation" asp-action="Listemployees">Employees</a>
@@ -78,6 +77,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+
+    @*Note** the scripts in the views (in RenderBody()) will be ran AFTER the scripts above in the _layout view*@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
